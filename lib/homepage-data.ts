@@ -3,6 +3,11 @@ export type NavItem = {
   href: string;
 };
 
+export type CtaLink = {
+  label: string;
+  href: string;
+};
+
 export type CategoryItem = {
   id: string;
   name: string;
@@ -27,15 +32,44 @@ export type StatItem = {
   value: number;
 };
 
-export type PromotionalBanner = {
+export type BannerItem = {
   id: string;
   title: string;
   subtitle: string;
   imageUrl: string;
-  cta: {
-    label: string;
-    href: string;
+  mobileImageUrl?: string;
+  cta: CtaLink;
+  bannerType?: string;
+  displayOrder?: number;
+};
+
+export type FeaturedProduct = {
+  id: string;
+  name: string;
+  slug: string;
+  sku: string;
+  categoryId: string;
+  categoryName: string;
+  brand?: string;
+  shortDescription?: string;
+  image?: {
+    url?: string;
+    altText?: string;
   };
+  pricing: {
+    currency: string;
+    mrp: number;
+    sellingPrice: number;
+    discountAmount: number;
+  };
+  inventory: {
+    quantity: number;
+    inStock: boolean;
+  };
+  hasVariants?: boolean;
+  variantAxes?: string[];
+  variantCount?: number;
+  featured?: boolean;
 };
 
 export type HomepagePayload = {
@@ -46,17 +80,12 @@ export type HomepagePayload = {
     showCart: boolean;
     navigation: NavItem[];
   };
+  heroBanners?: BannerItem[];
   welcomeBanner: {
     title: string;
     subtitle: string;
-    primaryAction: {
-      label: string;
-      href: string;
-    };
-    secondaryAction: {
-      label: string;
-      href: string;
-    };
+    primaryAction: CtaLink;
+    secondaryAction: CtaLink;
   };
   topCategories: {
     title: string;
@@ -83,6 +112,14 @@ export type HomepagePayload = {
     } | null;
     items: CategoryItem[];
   };
+  featuredProducts?: {
+    title: string;
+    items: FeaturedProduct[];
+  };
+  promotionalBanners: {
+    title: string;
+    items: BannerItem[];
+  };
   accountSummary: {
     title: string;
     user: {
@@ -93,10 +130,6 @@ export type HomepagePayload = {
       memberSince: string;
     };
     stats: StatItem[];
-  };
-  promotionalBanners: {
-    title: string;
-    items: PromotionalBanner[];
   };
   footer: {
     links: NavItem[];
@@ -126,8 +159,40 @@ export const homepageFallbackData: HomepagePayload = {
       { label: "My Account", href: "/account" },
     ],
   },
+  heroBanners: [
+    {
+      id: "hero-1",
+      title: "Mega Electronics Sale",
+      subtitle: "Up to 60% off on gadgets and accessories",
+      imageUrl:
+        "https://dummyjson.com/image/1400x420/0f172a/ffffff&text=Mega+Electronics+Sale",
+      mobileImageUrl:
+        "https://dummyjson.com/image/700x700/0f172a/ffffff&text=Electronics+Sale",
+      cta: {
+        label: "Shop Electronics",
+        href: "/categories/electronics",
+      },
+      bannerType: "HERO",
+      displayOrder: 1,
+    },
+    {
+      id: "hero-2",
+      title: "Fashion Festival",
+      subtitle: "Fresh styles for men, women and kids",
+      imageUrl:
+        "https://dummyjson.com/image/1400x420/7c2d12/ffffff&text=Fashion+Festival",
+      mobileImageUrl:
+        "https://dummyjson.com/image/700x700/7c2d12/ffffff&text=Fashion+Festival",
+      cta: {
+        label: "Explore Fashion",
+        href: "/categories/fashion",
+      },
+      bannerType: "HERO",
+      displayOrder: 2,
+    },
+  ],
   welcomeBanner: {
-    title: "Welcome back, Rahul Kumar",
+    title: "Welcome back",
     subtitle: "Discover categories and start shopping with curated picks.",
     primaryAction: {
       label: "Browse Categories",
@@ -142,133 +207,211 @@ export const homepageFallbackData: HomepagePayload = {
     title: "Top Categories",
     items: [
       {
-        id: "67ef10000000000000000001",
+        id: "cat-1",
         name: "Electronics",
         slug: "electronics",
-        description: "Phones, laptops, accessories and smart devices.",
+        description: "Browse top products in Electronics.",
         imageUrl:
-          "https://dummyjson.com/image/600x400/0f172a/ffffff&text=Electronics",
+          "https://dummyjson.com/image/600x400/1f2937/ffffff&text=Electronics",
       },
       {
-        id: "67ef10000000000000000002",
+        id: "cat-2",
         name: "Fashion",
         slug: "fashion",
-        description: "Clothing, footwear, bags and accessories.",
+        description: "Browse top products in Fashion.",
         imageUrl:
-          "https://dummyjson.com/image/600x400/7c2d12/ffffff&text=Fashion",
+          "https://dummyjson.com/image/600x400/1f2937/ffffff&text=Fashion",
       },
       {
-        id: "67ef10000000000000000003",
+        id: "cat-3",
         name: "Home & Kitchen",
-        slug: "home-kitchen",
-        description: "Furniture, decor, cookware and home essentials.",
+        slug: "home-and-kitchen",
+        description: "Browse top products in Home & Kitchen.",
         imageUrl:
-          "https://dummyjson.com/image/600x400/14532d/ffffff&text=Home+%26+Kitchen",
+          "https://dummyjson.com/image/600x400/1f2937/ffffff&text=Home%20%26%20Kitchen",
       },
       {
-        id: "67ef10000000000000000004",
+        id: "cat-4",
         name: "Beauty",
         slug: "beauty",
-        description: "Skincare, makeup, grooming and wellness.",
+        description: "Browse top products in Beauty.",
         imageUrl:
-          "https://dummyjson.com/image/600x400/831843/ffffff&text=Beauty",
+          "https://dummyjson.com/image/600x400/1f2937/ffffff&text=Beauty",
       },
     ],
+    pagination: {
+      page: 1,
+      limit: 8,
+      totalItems: 24,
+      totalPages: 3,
+      hasNextPage: true,
+      hasPreviousPage: false,
+    },
   },
   categoryTree: {
     title: "Browse By Category",
     items: [
       {
-        id: "67ef10000000000000000001",
+        id: "tree-1",
         name: "Electronics",
         slug: "electronics",
         children: [
-          { id: "67ef10000000000000000011", name: "Mobiles", slug: "mobiles" },
-          { id: "67ef10000000000000000012", name: "Laptops", slug: "laptops" },
-          {
-            id: "67ef10000000000000000013",
-            name: "Accessories",
-            slug: "accessories",
-          },
+          { id: "sub-1", name: "Mobiles", slug: "electronics-mobiles" },
+          { id: "sub-2", name: "Laptops", slug: "electronics-laptops" },
+          { id: "sub-3", name: "Audio", slug: "electronics-audio" },
         ],
       },
       {
-        id: "67ef10000000000000000002",
+        id: "tree-2",
         name: "Fashion",
         slug: "fashion",
         children: [
-          {
-            id: "67ef10000000000000000021",
-            name: "Men",
-            slug: "men-fashion",
-          },
-          {
-            id: "67ef10000000000000000022",
-            name: "Women",
-            slug: "women-fashion",
-          },
-          {
-            id: "67ef10000000000000000023",
-            name: "Kids",
-            slug: "kids-fashion",
-          },
+          { id: "sub-4", name: "Men Clothing", slug: "fashion-men-clothing" },
+          { id: "sub-5", name: "Women Clothing", slug: "fashion-women-clothing" },
+          { id: "sub-6", name: "Footwear", slug: "fashion-footwear" },
         ],
       },
       {
-        id: "67ef10000000000000000003",
+        id: "tree-3",
         name: "Home & Kitchen",
-        slug: "home-kitchen",
+        slug: "home-and-kitchen",
         children: [
           {
-            id: "67ef10000000000000000031",
+            id: "sub-7",
             name: "Furniture",
-            slug: "furniture",
+            slug: "home-and-kitchen-furniture",
           },
           {
-            id: "67ef10000000000000000032",
+            id: "sub-8",
             name: "Cookware",
-            slug: "cookware",
+            slug: "home-and-kitchen-cookware",
           },
-          { id: "67ef10000000000000000033", name: "Decor", slug: "decor" },
+          {
+            id: "sub-9",
+            name: "Home Decor",
+            slug: "home-and-kitchen-home-decor",
+          },
         ],
       },
     ],
   },
   featuredSubcategories: {
-    title: "Explore Electronics",
+    title: "Featured Subcategories",
     parentCategory: {
-      id: "67ef10000000000000000001",
+      id: "tree-1",
       name: "Electronics",
       slug: "electronics",
     },
     items: [
       {
-        id: "67ef10000000000000000011",
+        id: "fsub-1",
         name: "Mobiles",
-        slug: "mobiles",
+        slug: "electronics-mobiles",
         imageUrl:
-          "https://dummyjson.com/image/400x300/1d4ed8/ffffff&text=Mobiles",
+          "https://dummyjson.com/image/500x350/374151/ffffff&text=Mobiles",
       },
       {
-        id: "67ef10000000000000000012",
+        id: "fsub-2",
         name: "Laptops",
-        slug: "laptops",
+        slug: "electronics-laptops",
         imageUrl:
-          "https://dummyjson.com/image/400x300/4338ca/ffffff&text=Laptops",
+          "https://dummyjson.com/image/500x350/374151/ffffff&text=Laptops",
       },
       {
-        id: "67ef10000000000000000013",
+        id: "fsub-3",
         name: "Audio",
-        slug: "audio",
+        slug: "electronics-audio",
         imageUrl:
-          "https://dummyjson.com/image/400x300/0f766e/ffffff&text=Audio",
+          "https://dummyjson.com/image/500x350/374151/ffffff&text=Audio",
       },
       {
-        id: "67ef10000000000000000014",
-        name: "Wearables",
-        slug: "wearables",
+        id: "fsub-4",
+        name: "Cameras",
+        slug: "electronics-cameras",
         imageUrl:
-          "https://dummyjson.com/image/400x300/9a3412/ffffff&text=Wearables",
+          "https://dummyjson.com/image/500x350/374151/ffffff&text=Cameras",
+      },
+    ],
+  },
+  featuredProducts: {
+    title: "Featured Products",
+    items: [
+      {
+        id: "prod-1",
+        name: "Apple iPhone 17 Pro",
+        slug: "apple-iphone-17-pro",
+        sku: "APPLE-IPHONE-17-PRO",
+        categoryId: "fsub-1",
+        categoryName: "Mobiles",
+        brand: "Apple",
+        shortDescription:
+          "Flagship Apple smartphone with ProMotion display and triple-camera system.",
+        image: {
+          url: "https://dummyjson.com/image/800x800/111827/ffffff&text=iPhone+17+Pro",
+          altText: "Apple iPhone 17 Pro",
+        },
+        pricing: {
+          currency: "INR",
+          mrp: 139900,
+          sellingPrice: 129900,
+          discountAmount: 10000,
+        },
+        inventory: {
+          quantity: 21,
+          inStock: true,
+        },
+        hasVariants: true,
+        variantAxes: ["color", "storage"],
+        variantCount: 3,
+        featured: true,
+      },
+      {
+        id: "prod-2",
+        name: "Samsung Galaxy Ultra 26",
+        slug: "samsung-galaxy-ultra-26",
+        sku: "SKU-SAM-GALAXY-ULTRA-26",
+        categoryId: "fsub-1",
+        categoryName: "Mobiles",
+        brand: "Samsung",
+        shortDescription: "Premium Android smartphone with powerful cameras.",
+        image: {
+          url: "https://dummyjson.com/image/800x800/334155/ffffff&text=Galaxy+Ultra",
+          altText: "Samsung Galaxy Ultra 26",
+        },
+        pricing: {
+          currency: "INR",
+          mrp: 89000,
+          sellingPrice: 80000,
+          discountAmount: 9000,
+        },
+        inventory: {
+          quantity: 30,
+          inStock: true,
+        },
+        hasVariants: true,
+        variantAxes: ["ram", "storage"],
+        variantCount: 2,
+        featured: true,
+      },
+    ],
+  },
+  promotionalBanners: {
+    title: "Spotlight",
+    items: [
+      {
+        id: "promo-1",
+        title: "Weekend Spotlight",
+        subtitle: "Special promo picks for this weekend",
+        imageUrl:
+          "https://dummyjson.com/image/1200x320/111827/ffffff&text=Weekend+Spotlight",
+        mobileImageUrl:
+          "https://dummyjson.com/image/700x500/111827/ffffff&text=Weekend+Spotlight",
+        cta: {
+          label: "See Offers",
+          href: "/offers/weekend",
+        },
+        bannerType: "PROMO",
+        displayOrder: 1,
       },
     ],
   },
@@ -285,33 +428,6 @@ export const homepageFallbackData: HomepagePayload = {
       { label: "Orders", value: 3 },
       { label: "Wishlist", value: 7 },
       { label: "Saved Addresses", value: 2 },
-    ],
-  },
-  promotionalBanners: {
-    title: "Spotlight",
-    items: [
-      {
-        id: "promo-1",
-        title: "Weekend Deals",
-        subtitle: "Up to 40% off on electronics and accessories.",
-        imageUrl:
-          "https://dummyjson.com/image/1200x300/111827/ffffff&text=Weekend+Deals",
-        cta: {
-          label: "Shop Now",
-          href: "/offers/weekend-deals",
-        },
-      },
-      {
-        id: "promo-2",
-        title: "New Season Fashion",
-        subtitle: "Fresh arrivals for men, women and kids.",
-        imageUrl:
-          "https://dummyjson.com/image/1200x300/7c2d12/ffffff&text=New+Season+Fashion",
-        cta: {
-          label: "Explore",
-          href: "/categories/fashion",
-        },
-      },
     ],
   },
   footer: {

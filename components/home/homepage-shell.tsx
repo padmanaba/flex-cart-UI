@@ -3,6 +3,7 @@
 import { AccountSummarySection } from "@/components/home/account-summary-section";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { CategoryTreeSection } from "@/components/home/category-tree-section";
+import { FeaturedProductsSection } from "@/components/home/featured-products-section";
 import { FeaturedSubcategories } from "@/components/home/featured-subcategories";
 import { HeroSection } from "@/components/home/hero-section";
 import { PromotionalBanners } from "@/components/home/promotional-banners";
@@ -22,6 +23,7 @@ export function HomepageShell() {
       <SiteHeader header={homepage.header} />
       <main className="flex-1">
         <HeroSection
+          heroBanners={homepage.heroBanners}
           welcomeBanner={homepage.welcomeBanner}
           accountSummary={homepage.accountSummary}
         />
@@ -30,6 +32,7 @@ export function HomepageShell() {
         <FeaturedSubcategories
           featuredSubcategories={homepage.featuredSubcategories}
         />
+        <FeaturedProductsSection featuredProducts={homepage.featuredProducts} />
         <AccountSummarySection accountSummary={homepage.accountSummary} />
         <PromotionalBanners promotionalBanners={homepage.promotionalBanners} />
       </main>

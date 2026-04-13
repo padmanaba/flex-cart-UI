@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 
@@ -6,22 +7,36 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 type HeroSectionProps = {
+  heroBanners?: HomepagePayload["heroBanners"];
   welcomeBanner: HomepagePayload["welcomeBanner"];
   accountSummary: HomepagePayload["accountSummary"];
 };
 
+function sortBanners(
+  banners: NonNullable<HomepagePayload["heroBanners"]> = []
+) {
+  return [...banners].sort(
+    (left, right) => (left.displayOrder ?? 999) - (right.displayOrder ?? 999)
+  );
+}
+
 export function HeroSection({
+  heroBanners,
   welcomeBanner,
   accountSummary,
 }: HeroSectionProps) {
+  const orderedBanners = sortBanners(heroBanners);
+  const primaryBanner = orderedBanners[0];
+  const secondaryBanners = orderedBanners.slice(1, 3);
+
   return (
     <section className="relative overflow-hidden">
-      <div className="absolute inset-x-0 top-0 -z-10 h-[28rem] bg-[radial-gradient(circle_at_top_left,_rgba(240,171,0,0.24),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(14,165,233,0.18),_transparent_30%),linear-gradient(180deg,_rgba(255,255,255,1),_rgba(255,249,235,0.82))]" />
-      <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-20">
+      <div className="absolute inset-x-0 top-0 -z-10 h-[36rem] bg-[radial-gradient(circle_at_top_left,_rgba(240,171,0,0.18),_transparent_30%),radial-gradient(circle_at_top_right,_rgba(14,165,233,0.16),_transparent_28%),linear-gradient(180deg,_rgba(255,255,255,1),_rgba(248,250,252,0.92))]" />
+      <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-16">
         <div className="space-y-8">
           <Badge variant="outline" className="rounded-full px-3 py-1">
             <Sparkles className="size-3.5" />
-            Launch-ready storefront starter
+            Dynamic storefront homepage
           </Badge>
 
           <div className="space-y-5">
@@ -58,7 +73,7 @@ export function HeroSection({
             {accountSummary.stats.map((metric) => (
               <div
                 key={metric.label}
-                className="rounded-2xl border border-border/70 bg-background/80 p-4 shadow-sm"
+                className="rounded-2xl border border-border/70 bg-background/90 p-4 shadow-sm"
               >
                 <p className="text-2xl font-semibold tracking-tight">
                   {metric.value}
@@ -71,39 +86,98 @@ export function HeroSection({
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-[2rem] border border-border/70 bg-card p-5 shadow-sm sm:col-span-2">
-            <div className="rounded-[1.5rem] bg-[linear-gradient(135deg,#111827_0%,#374151_45%,#f59e0b_100%)] p-6 text-white">
-              <p className="text-sm uppercase tracking-[0.25em] text-white/70">
-                Member Snapshot
+        <div className="grid gap-4">
+          {primaryBanner ? (
+            <article className="relative min-h-[360px] overflow-hidden rounded-[2rem] border border-border/70 shadow-lg">
+              <Image
+                src={primaryBanner.imageUrl}
+                alt={primaryBanner.title}
+                fill
+                sizes="(max-width: 1024px) 100vw, 720px"
+                className="object-cover"
+              />
+              <div className="relative flex min-h-[360px] flex-col justify-end bg-[linear-gradient(180deg,rgba(15,23,42,0.12)_0%,rgba(15,23,42,0.78)_72%,rgba(15,23,42,0.92)_100%)] p-6 text-white sm:p-8">
+                <div className="max-w-xl space-y-4">
+                  <p className="text-xs font-medium uppercase tracking-[0.24em] text-white/70">
+                    Featured banner
+                  </p>
+                  <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                    {primaryBanner.title}
+                  </h2>
+                  <p className="max-w-lg text-sm leading-6 text-white/80 sm:text-base">
+                    {primaryBanner.subtitle}
+                  </p>
+                  <Button
+                    size="lg"
+                    className="rounded-full bg-white text-slate-950 hover:bg-white/90"
+                    nativeButton={false}
+                    render={<Link href={primaryBanner.cta.href} />}
+                  >
+                    {primaryBanner.cta.label}
+                    <ArrowRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            </article>
+          ) : null}
+
+          {secondaryBanners.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {secondaryBanners.map((banner) => (
+                <article
+                  key={banner.id}
+                  className="relative min-h-[220px] overflow-hidden rounded-[1.75rem] border border-border/70 shadow-sm"
+                >
+                  <Image
+                    src={banner.imageUrl}
+                    alt={banner.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 360px"
+                    className="object-cover"
+                  />
+                  <div className="relative flex min-h-[220px] flex-col justify-end bg-[linear-gradient(180deg,rgba(15,23,42,0.05)_0%,rgba(15,23,42,0.75)_100%)] p-5 text-white">
+                    <h3 className="text-2xl font-semibold tracking-tight">
+                      {banner.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-white/80">
+                      {banner.subtitle}
+                    </p>
+                    <Link
+                      href={banner.cta.href}
+                      className="mt-4 inline-flex text-sm font-medium text-white underline-offset-4 hover:underline"
+                    >
+                      {banner.cta.label}
+                    </Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : null}
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="rounded-[1.75rem] border border-border/70 bg-card p-6 shadow-sm">
+              <p className="text-sm text-muted-foreground">Member since</p>
+              <p className="mt-3 text-3xl font-semibold tracking-tight">
+                {new Intl.DateTimeFormat("en-IN", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                }).format(new Date(accountSummary.user.memberSince))}
               </p>
-              <h2 className="mt-3 max-w-sm text-3xl font-semibold tracking-tight">
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Personalized modules can shift over time without needing UI rewrites.
+              </p>
+            </div>
+
+            <div className="rounded-[1.75rem] border border-border/70 bg-card p-6 shadow-sm">
+              <p className="text-sm text-muted-foreground">Account summary</p>
+              <p className="mt-3 text-2xl font-semibold tracking-tight">
                 {accountSummary.user.name}
-              </h2>
-              <p className="mt-3 max-w-md text-sm leading-6 text-white/75">
+              </p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
                 {accountSummary.user.email} | {accountSummary.user.role}
               </p>
             </div>
-          </div>
-          <div className="rounded-[2rem] border border-border/70 bg-card p-6 shadow-sm">
-            <p className="text-sm text-muted-foreground">Member since</p>
-            <p className="mt-3 text-3xl font-semibold tracking-tight">
-              {new Intl.DateTimeFormat("en-IN", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              }).format(new Date(accountSummary.user.memberSince))}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Account-level personalization now comes from the homepage payload.
-            </p>
-          </div>
-          <div className="rounded-[2rem] border border-border/70 bg-card p-6 shadow-sm">
-            <p className="text-sm text-muted-foreground">Next stop</p>
-            <p className="mt-3 text-3xl font-semibold tracking-tight">My Account</p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Keep orders, wishlist, and saved addresses one tap away.
-            </p>
           </div>
         </div>
       </div>

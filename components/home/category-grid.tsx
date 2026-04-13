@@ -10,6 +10,7 @@ type CategoryGridProps = {
 
 export function CategoryGrid({ topCategories }: CategoryGridProps) {
   const hasItems = topCategories.items.length > 0;
+  const pagination = topCategories.pagination;
 
   return (
     <section id="categories" className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
@@ -19,7 +20,9 @@ export function CategoryGrid({ topCategories }: CategoryGridProps) {
           <h2 className="text-3xl font-semibold tracking-tight">{topCategories.title}</h2>
         </div>
         <p className="max-w-lg text-sm leading-6 text-muted-foreground">
-          Each card is rendered from the homepage response, so category content stays dynamic.
+          {pagination
+            ? `Showing ${topCategories.items.length} of ${pagination.totalItems} categories from page ${pagination.page}.`
+            : "Each card is rendered from the homepage response, so category content stays dynamic."}
         </p>
       </div>
 

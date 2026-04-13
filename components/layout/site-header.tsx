@@ -1,8 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { CircleUserRound, Menu, Search, ShoppingBag } from "lucide-react";
+import { useState } from "react";
+import {
+  CircleUserRound,
+  Grid2X2,
+  Menu,
+  Search,
+  ShoppingBag,
+} from "lucide-react";
 
+import { useCategoriesTreeQuery } from "@/hooks/use-categories-tree-query";
 import type { HomepagePayload } from "@/lib/homepage-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +28,16 @@ type SiteHeaderProps = {
 };
 
 export function SiteHeader({ header }: SiteHeaderProps) {
+  const { data: categoriesTree = [] } = useCategoriesTreeQuery();
+  const topCategories = [...categoriesTree].sort(
+    (a, b) => a.sortOrder - b.sortOrder
+  );
+  const [activeCategorySlug, setActiveCategorySlug] = useState("");
+  const resolvedActiveCategorySlug = activeCategorySlug || topCategories[0]?.slug || "";
+  const activeCategory =
+    topCategories.find((category) => category.slug === resolvedActiveCategorySlug) ??
+    topCategories[0];
+
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-7xl items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
@@ -105,6 +123,41 @@ export function SiteHeader({ header }: SiteHeaderProps) {
               {header.showSearch ? (
                 <Input type="search" placeholder="Search products..." />
               ) : null}
+
+              {topCategories.length > 0 ? (
+                <div className="rounded-2xl border border-border/70 p-4">
+                  <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
+                    <Grid2X2 className="size-4" />
+                    Categories
+                  </div>
+                  <div className="space-y-3">
+                    {topCategories.map((category) => (
+                      <div key={category._id} className="rounded-2xl border border-border/70 p-3">
+                        <Link
+                          href={`/categories/${category.slug}`}
+                          className="text-sm font-medium text-foreground"
+                        >
+                          {category.name}
+                        </Link>
+                        {category.children.length > 0 ? (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {category.children.slice(0, 8).map((child) => (
+                              <Link
+                                key={child._id}
+                                href={`/categories/${child.slug}`}
+                                className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground"
+                              >
+                                {child.name}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
               <div className="flex flex-col gap-3">
                 {header.navigation.map((item) => (
                   <Link
@@ -138,6 +191,51 @@ export function SiteHeader({ header }: SiteHeaderProps) {
           </SheetContent>
         </Sheet>
       </div>
+
+      {topCategories.length > 0 ? (
+        <div className="hidden border-t border-border/70 md:block">
+          <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-3 overflow-x-auto pb-1">
+              <div className="flex shrink-0 items-center gap-2 text-sm font-medium text-foreground">
+                <Grid2X2 className="size-4 text-primary" />
+                Shop by category
+              </div>
+              {topCategories.map((category) => (
+                <button
+                  key={category._id}
+                  type="button"
+                  onClick={() => setActiveCategorySlug(category.slug)}
+                  className={`shrink-0 rounded-full border px-4 py-2 text-sm transition ${
+                    activeCategory?.slug === category.slug
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-background text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-3 overflow-x-auto pb-1">
+              {activeCategory?.children.length ? (
+                activeCategory.children.map((child) => (
+                  <Link
+                    key={child._id}
+                    href={`/categories/${child.slug}`}
+                    className="shrink-0 rounded-full bg-muted px-4 py-2 text-sm text-muted-foreground transition hover:bg-accent hover:text-foreground"
+                  >
+                    {child.name}
+                  </Link>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No subcategories available for this category.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 }

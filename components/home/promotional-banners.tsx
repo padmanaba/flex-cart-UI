@@ -12,6 +12,10 @@ type PromotionalBannersProps = {
 export function PromotionalBanners({
   promotionalBanners,
 }: PromotionalBannersProps) {
+  const items = [...promotionalBanners.items].sort(
+    (left, right) => (left.displayOrder ?? 999) - (right.displayOrder ?? 999)
+  );
+
   return (
     <section
       id="offers"
@@ -30,17 +34,24 @@ export function PromotionalBanners({
       </div>
 
       <div className="grid gap-6">
-        {promotionalBanners.items.map((banner) => (
+        {items.map((banner) => (
           <div
             key={banner.id}
             className="relative overflow-hidden rounded-[2rem] border border-border/70 shadow-sm"
           >
             <Image
+              src={banner.mobileImageUrl || banner.imageUrl}
+              alt={banner.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 1280px"
+              className="absolute inset-0 h-full w-full object-cover sm:hidden"
+            />
+            <Image
               src={banner.imageUrl}
               alt={banner.title}
               fill
               sizes="(max-width: 768px) 100vw, 1280px"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 hidden h-full w-full object-cover sm:block"
             />
             <div className="relative bg-[linear-gradient(90deg,rgba(17,24,39,0.82)_0%,rgba(17,24,39,0.55)_45%,rgba(17,24,39,0.18)_100%)] px-6 py-10 text-white sm:px-8 lg:px-10">
               <h3 className="text-3xl font-semibold tracking-tight">
